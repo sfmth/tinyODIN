@@ -331,6 +331,11 @@ module tinyODIN #(
         .CTRL_PROG_DATA(CTRL_PROG_DATA),
         .CTRL_SPI_ADDR(CTRL_SPI_ADDR),
         
+        .CTRL_NEURMEM_CS(CTRL_NEURMEM_CS),
+        .CTRL_NEURMEM_WE(CTRL_NEURMEM_WE),
+        .CTRL_NEURMEM_ADDR(CTRL_NEURMEM_ADDR),
+
+
         // Outputs ------------------------------------------------
         .NEUR_STATE(NEUR_STATE),
         .NEUR_EVENT_OUT(NEUR_EVENT_OUT),
@@ -338,5 +343,6 @@ module tinyODIN #(
     );
             
     
+
 endmodule
 
