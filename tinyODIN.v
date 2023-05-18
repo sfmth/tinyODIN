@@ -49,7 +49,20 @@ module tinyODIN #(
 	input  wire 	      AEROUT_ACK,
 
     // Debug ------------------------------------------
-    output wire           SCHED_FULL
+    output wire           SCHED_FULL,
+
+    output          CTRL_NEURMEM_CS,           // Chip select
+    output          CTRL_NEURMEM_WE,           // Write enable
+    output  [  7:0] CTRL_NEURMEM_ADDR,         // Address bus 
+
+    input wire [31:0] NEUR_STATE,
+    output wire [31:0] neuron_data,
+
+    output wire                 CTRL_SYNARRAY_WE,
+    output wire [12:0] CTRL_SYNARRAY_ADDR,
+    output wire                 CTRL_SYNARRAY_CS,
+    output wire [31:0] synarray_wdata,
+    input wire [31:0]  SYNARRAY_RDATA
 );
 
     //----------------------------------------------------------------------------------
@@ -75,12 +88,6 @@ module tinyODIN #(
     wire [      2*M-1:0] CTRL_SPI_ADDR;
     wire [          1:0] CTRL_OP_CODE;
     wire [      2*M-1:0] CTRL_PROG_DATA;
-    wire                 CTRL_SYNARRAY_WE;
-    wire                 CTRL_NEURMEM_WE;
-    wire [         12:0] CTRL_SYNARRAY_ADDR;
-    wire [        M-1:0] CTRL_NEURMEM_ADDR;
-    wire                 CTRL_SYNARRAY_CS;
-    wire                 CTRL_NEURMEM_CS;
     wire                 CTRL_NEUR_EVENT; 
     wire                 CTRL_NEUR_TREF;  
     wire [          3:0] CTRL_NEUR_VIRTS;
@@ -91,14 +98,12 @@ module tinyODIN #(
     wire                 CTRL_AEROUT_POP_NEUR;
     
     // Synaptic core
-    wire [         31:0] SYNARRAY_RDATA;
     
     // Scheduler
     wire                 SCHED_EMPTY;
     wire [         11:0] SCHED_DATA_OUT;
     
     // Neuron core
-    wire [         31:0] NEUR_STATE;
     wire                 NEUR_EVENT_OUT;
     
     
@@ -292,13 +297,11 @@ module tinyODIN #(
         .CLK(CLK),
         
         // Inputs from controller ---------------------------------
-        .CTRL_SYNARRAY_WE(CTRL_SYNARRAY_WE),
-        .CTRL_SYNARRAY_ADDR(CTRL_SYNARRAY_ADDR),
-        .CTRL_SYNARRAY_CS(CTRL_SYNARRAY_CS),
         .CTRL_PROG_DATA(CTRL_PROG_DATA),
         .CTRL_SPI_ADDR(CTRL_SPI_ADDR),
         
         // Outputs ------------------------------------------------
+        .synarray_wdata(synarray_wdata),
         .SYNARRAY_RDATA(SYNARRAY_RDATA)
 	);
     
@@ -325,15 +328,13 @@ module tinyODIN #(
         .CTRL_NEUR_EVENT(CTRL_NEUR_EVENT),
         .CTRL_NEUR_TREF(CTRL_NEUR_TREF),
         .CTRL_NEUR_VIRTS(CTRL_NEUR_VIRTS),
-        .CTRL_NEURMEM_WE(CTRL_NEURMEM_WE),
-        .CTRL_NEURMEM_ADDR(CTRL_NEURMEM_ADDR),
-        .CTRL_NEURMEM_CS(CTRL_NEURMEM_CS),
         .CTRL_PROG_DATA(CTRL_PROG_DATA),
         .CTRL_SPI_ADDR(CTRL_SPI_ADDR),
         
         // Outputs ------------------------------------------------
         .NEUR_STATE(NEUR_STATE),
-        .NEUR_EVENT_OUT(NEUR_EVENT_OUT)
+        .NEUR_EVENT_OUT(NEUR_EVENT_OUT),
+        .neuron_data(neuron_data)
     );
             
     

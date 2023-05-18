@@ -51,8 +51,12 @@ module neuron_core #(
     input  wire [      2*M-1:0] CTRL_SPI_ADDR,
     
     // Outputs ------------------------------------------------
-    output wire [         31:0] NEUR_STATE,
-    output wire                 NEUR_EVENT_OUT
+    input wire [         31:0] NEUR_STATE,
+    output wire                 NEUR_EVENT_OUT,
+
+    // Control and data inputs
+    output wire [31:0]  neuron_data               // Data input bus (write)
+
 );
     
     // Internal regs and wires definitions
@@ -66,7 +70,7 @@ module neuron_core #(
     
     wire [   11:0] LIF_neuron_next_NEUR_STATE;
     
-    wire [   31:0] neuron_data_int, neuron_data;
+    wire [   31:0] neuron_data_int;
     
     genvar i;
 
@@ -118,56 +122,9 @@ module neuron_core #(
     );
 
 
-    // Neuron memory wrapper
-
-    SRAM_256x32_wrapper neurarray_0 (       
-        
-        // Global inputs
-        .CK         (CLK),
-    
-        // Control and data inputs
-        .CS         (CTRL_NEURMEM_CS),
-        .WE         (CTRL_NEURMEM_WE),
-        .A          (CTRL_NEURMEM_ADDR),
-        .D          (neuron_data),
-        
-        // Data output
-        .Q          (NEUR_STATE)
-    );
-    
-
 endmodule
 
 
 
 
-module SRAM_256x32_wrapper (
 
-    // Global inputs
-    input          CK,                       // Clock (synchronous read/write)
-
-    // Control and data inputs
-    input          CS,                       // Chip select
-    input          WE,                       // Write enable
-    input  [  7:0] A,                        // Address bus 
-    input  [ 31:0] D,                        // Data input bus (write)
-
-    // Data output
-    output [ 31:0] Q                         // Data output bus (read)   
-);
-
-
-    /*
-     *  Simple behavioral code for simulation, to be replaced by a 256-word 32-bit SRAM macro 
-     *  or Block RAM (BRAM) memory with the same format for FPGA implementations.
-     */      
-        reg [31:0] SRAM[255:0];
-        reg [31:0] Qr;
-        always @(posedge CK) begin
-            Qr <= CS ? SRAM[A] : Qr;
-            if (CS & WE) SRAM[A] <= D;
-        end
-        assign Q = Qr;
-
-
-endmodule
